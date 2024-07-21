@@ -6,14 +6,14 @@ public class PlayerController : MonoBehaviour
 {
     private Rigidbody2D rb;
 
-    private float speed = 10f;
+    //private float speed = 10f;
     private float rotationSpeed = 8f;
 
     private void Start()
     {
         rb = GetComponent<Rigidbody2D>();
     }
-
+    
     private void FixedUpdate()
     {
         //Gathering mouse pos direction
@@ -37,7 +37,7 @@ public class PlayerController : MonoBehaviour
         {
             horizontalInput = -1;
         }
-
+        
         if (Input.GetKey(Keybinds.GetKeyCode("W")))
         {
             verticalInput = 1;
@@ -47,8 +47,22 @@ public class PlayerController : MonoBehaviour
             verticalInput = -1;
         }
         
-        Vector2 movement = new Vector2(horizontalInput * Time.fixedDeltaTime, verticalInput * Time.fixedDeltaTime).normalized;
-        //transform.position += movement;
-        rb.velocity = movement * speed;
+        Vector3 movement = new Vector3(horizontalInput * Time.fixedDeltaTime, verticalInput * Time.fixedDeltaTime, 0).normalized;
+        //rb.velocity = movement * speed;
+        rb.AddForce(movement, ForceMode2D.Impulse);
+    }
+
+    private float lastV = 0;
+    
+    private void LateUpdate()
+    {
+        float v = Mathf.Abs(rb.velocity.x) + Mathf.Abs(rb.velocity.y);
+        
+        if (v <= 1f && v < lastV)
+        {
+            rb.velocity = Vector2.zero;
+        }
+
+        lastV = v;
     }
 }

@@ -8,10 +8,11 @@ public class Enemy : MonoBehaviour, IDamageable
     public List<Weapon> weapons = new List<Weapon>();
     public ParticleSystem deathExplosion;
     public GameObject sprite;
+    public float inaccuracyDegree = 3.0f;
 
     private Rigidbody2D rb;
 
-    private float rotationSpeed = 16f;
+    private float rotationSpeed = 8f;
 
     private Vector3 targetPosRelToPlayer;
 
@@ -25,9 +26,9 @@ public class Enemy : MonoBehaviour, IDamageable
     {
         if(gameObject.activeSelf)
         {
-            Vector3 predictedPos = PredictPlayerPos.GetPredictedPos(PlayerPosition.playerRb, transform.position, 25f);//PlayerPosition.pos - transform.position;
+            Vector3 predictedPos = PredictPlayerPos.GetPredictedPos(PlayerPosition.playerRb, transform.position, Random.Range(15f, 35f));//PlayerPosition.pos - transform.position;
             Vector3 direction = predictedPos.normalized;
-
+            
             //Rotating to look at player
             float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
             Quaternion targetRotation = Quaternion.Euler(new Vector3(0, 0, angle - 90));
@@ -53,6 +54,15 @@ public class Enemy : MonoBehaviour, IDamageable
         }
     }
     
+    private Vector3 ApplyRandomInaccuracy(Vector3 direction)
+    {   
+        float randomAngle = Random.Range(-inaccuracyDegree, inaccuracyDegree);
+
+        Quaternion rotation = Quaternion.Euler(0, 0, randomAngle);
+
+        return rotation * direction;
+    }
+
     private void Shoot()
     {
         foreach(var i in weapons)

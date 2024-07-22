@@ -2,10 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Projectile : MonoBehaviour
+public abstract class Projectile : MonoBehaviour
 {
-    public TrailRenderer trail;
-
+    //public TrailRenderer trail;
+    
     private float damage;
     private Vector3 direction;
     private float range;
@@ -13,14 +13,18 @@ public class Projectile : MonoBehaviour
     private Rigidbody2D rb;
     private Collider2D c;
     private float speed;
+
+    private bool isPlayer;
+    private WeaponTypes weaponType;
     
-    public void Init(Transform pos, float damage, float range, float speed, Vector3 characterVelocity, LayerMask targetLayer, LayerMask sender)
+    public void Init(Transform pos, float damage, float range, float speed, Vector3 characterVelocity, LayerMask targetLayer, LayerMask sender, bool isPlayer, WeaponTypes weaponType)
     {
         rb = GetComponent<Rigidbody2D>();
         c = GetComponent<Collider2D>();
 
         c.includeLayers = targetLayer;
         c.excludeLayers = sender;
+
         this.damage = damage;
         transform.position = pos.position + characterVelocity * 0.015f;
         transform.rotation = pos.rotation;
@@ -28,11 +32,20 @@ public class Projectile : MonoBehaviour
         this.range = range;
         this.speed = speed;
         startPos = transform.position;
-        gameObject.SetActive(true);
-        trail.Clear();
-        trail.emitting = true;
-    }
 
+        this.isPlayer = isPlayer;
+        this.weaponType = weaponType;
+        
+        gameObject.SetActive(true);
+        //trail.Clear();
+        //trail.emitting = true;
+        OnInit();
+    }
+    
+    //For doing extra initialization stuff (starting trail / particle system)
+    public abstract void OnInit();
+    
+    //Just make this in each child, like lasers will move differently than missiles, but they all have access to the same info set in Init()
     private void FixedUpdate()
     {
         if(gameObject.activeSelf)
@@ -45,50 +58,18 @@ public class Projectile : MonoBehaviour
             }
         }
     }
-
+    
     private void ReturnToPool()
     {
-        trail.emitting = false;
+        //trail.emitting = false;
+        OnReturnToPool();
         gameObject.SetActive(false);
 
-        ProjectilePool.Instance.ReturnProjectile(gameObject);
-        /*
-            Type:
-                0 = Player Bullet
-                1 = Player Laser
-                2 = Player Missile
-                3 = Enemy Bullet
-                4 = Enemy Laser
-                5 = Enemy Missile
-        */
-        
-        /*switch(type)
-        {
-            case 0:
-                ProjectilePool.Instance.ReturnPlayerBullet(gameObject);
-                break;
-            
-            case 1:
-                
-                break;
-            
-            case 2:
-                
-                break;
-            
-            case 3:
-                
-                break;
-            
-            case 4:
-                
-                break;
-            
-            case 5:
-                
-                break;
-        }*/
+        //ProjectilePool.Instance.ReturnProjectile(gameObject);
     }
+    
+    //For doing extra disabling stuff (explosions, disabling trail)
+    public abstract void OnReturnToPool();
 
     private void OnTriggerEnter2D(Collider2D other)
     {

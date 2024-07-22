@@ -4,8 +4,6 @@ using UnityEngine;
 
 public enum WeaponTypes
 {
-    Unspecified,
-    Bullet,
     Laser,
     Missile
 }
@@ -13,12 +11,8 @@ public enum WeaponTypes
 [CreateAssetMenu(fileName = "Weapon", menuName = "ScriptableObjects/WeaponScriptableObject")]
 public class WeaponSO : ScriptableObject
 {
-    public Sprite sprite;
-    public WeaponTypes weaponType;
     public float damage;
-    public float timeBetweenShots;
-    public TrailRenderer projectileTrail;
-    public Sprite projectileSprite;
+    public float fireRate; //Shots per second
     
     public string weaponName()
     {

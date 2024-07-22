@@ -16,7 +16,7 @@ public class Weapon : MonoBehaviour
     {
         projectile.GetComponent<ProjectileCollisionHandler>().SetDamage(damage);
     }
-
+    
     public void Shoot(Vector3 characterVelocity)
     {
         if (Time.time >= fireRateCounter)

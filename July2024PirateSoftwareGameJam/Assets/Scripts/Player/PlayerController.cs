@@ -2,16 +2,19 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : MonoBehaviour, IDamageable
 {
+    public float health = 100;
+    public List<Weapon> weapons = new List<Weapon>();
+    
     private Rigidbody2D rb;
-
-    //private float speed = 10f;
+    
     private float rotationSpeed = 8f;
 
     private void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        PlayerPosition.playerRb = rb;
     }
     
     private void FixedUpdate()
@@ -47,9 +50,10 @@ public class PlayerController : MonoBehaviour
             verticalInput = -1;
         }
         
-        Vector3 movement = new Vector3(horizontalInput * Time.fixedDeltaTime, verticalInput * Time.fixedDeltaTime, 0).normalized;
-        //rb.velocity = movement * speed;
+        Vector3 movement = new Vector3(horizontalInput, verticalInput, 0).normalized;
         rb.AddForce(movement, ForceMode2D.Impulse);
+
+        PlayerPosition.pos = transform.position;
     }
 
     private float lastV = 0;
@@ -64,5 +68,21 @@ public class PlayerController : MonoBehaviour
         }
 
         lastV = v;
+    }
+    
+    private void Update()
+    {
+        if(Input.GetMouseButton(0))
+        {
+            foreach(var i in weapons)
+            {
+                i.Shoot(rb.velocity);
+            }
+        }
+    }
+
+    public void TakeDamage(float amount)
+    {
+        health -= amount;
     }
 }

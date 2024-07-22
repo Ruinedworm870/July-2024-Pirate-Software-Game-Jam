@@ -4,44 +4,28 @@ using UnityEngine;
 
 public class Weapon : MonoBehaviour
 {
-    private WeaponSO weaponData;
-    private bool isPlayer = false;
+    public float damage;
 
-    public void SetWeaponData(WeaponSO w)
-    {
-        weaponData = w;
-    }
+    public float fireRate; //Shots per second
+    private float fireRateCounter = 0;
 
-    public void SetIsPlayer(bool p)
-    {
-        isPlayer = p;
-    }
+    public Transform firingPoint;
+    public ParticleSystem projectile;
     
-    public void Shoot(int shootType, bool enemy)
+    private void Awake()
     {
-        //shootType =
-        //0 = all
-        //1 = bullets and lasers (Player left click)
-        //2 = missiles (Player right click)
-
-        if (weaponData != null)
-        {
-            if (shootType == 0 || 
-            (shootType == 1 && weaponData.weaponType == WeaponTypes.Bullet) || (shootType == 1 && weaponData.weaponType == WeaponTypes.Laser) || 
-            (shootType == 2 && weaponData.weaponType == WeaponTypes.Missile))
-            {
-                Shoot();
-            }
-        }
+        projectile.GetComponent<ProjectileCollisionHandler>().SetDamage(damage);
     }
-    
-    public void Shoot()
-    {
-        //Bypasses type and just shoots
 
-        if(weaponData != null)
+    public void Shoot(Vector3 characterVelocity)
+    {
+        if (Time.time >= fireRateCounter)
         {
+            projectile.transform.position = firingPoint.position + characterVelocity * 0.0015f;
             
+            projectile.Emit(1);
+
+            fireRateCounter = Time.time + 1f / fireRate;
         }
     }
 }

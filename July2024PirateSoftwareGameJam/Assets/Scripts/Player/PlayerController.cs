@@ -54,6 +54,14 @@ public class PlayerController : MonoBehaviour, IDamageable
         rb.AddForce(movement, ForceMode2D.Impulse);
 
         PlayerPosition.pos = transform.position;
+
+        if (Input.GetMouseButton(0))
+        {
+            foreach (var i in weapons)
+            {
+                i.Shoot(rb.velocity);
+            }
+        }
     }
 
     private float lastV = 0;
@@ -68,17 +76,6 @@ public class PlayerController : MonoBehaviour, IDamageable
         }
 
         lastV = v;
-    }
-    
-    private void Update()
-    {
-        if(Input.GetMouseButton(0))
-        {
-            foreach(var i in weapons)
-            {
-                i.Shoot(rb.velocity);
-            }
-        }
     }
 
     public void TakeDamage(float amount)

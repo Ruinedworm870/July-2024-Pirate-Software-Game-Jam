@@ -6,8 +6,6 @@ public class Enemy : MonoBehaviour, IDamageable
 {
     public float health = 100f;
     public List<Weapon> weapons = new List<Weapon>();
-    public ParticleSystem deathExplosion;
-    public GameObject sprite;
     public float inaccuracyDegree = 3.0f;
 
     private Rigidbody2D rb;
@@ -26,7 +24,7 @@ public class Enemy : MonoBehaviour, IDamageable
     {
         if(gameObject.activeSelf)
         {
-            Vector3 predictedPos = PredictPlayerPos.GetPredictedPos(PlayerPosition.playerRb, transform.position, Random.Range(15f, 35f));//PlayerPosition.pos - transform.position;
+            Vector3 predictedPos = PredictPlayerPos.GetPredictedPos(PlayerPosition.playerRb, transform.position, rb.velocity, Random.Range(15f, 35f));//PlayerPosition.pos - transform.position;
             Vector3 direction = predictedPos.normalized;
             
             //Rotating to look at player

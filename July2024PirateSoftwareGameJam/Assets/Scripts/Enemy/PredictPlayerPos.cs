@@ -4,9 +4,9 @@ using UnityEngine;
 
 public static class PredictPlayerPos
 {
-    public static Vector2 GetPredictedPos(Rigidbody2D target, Vector3 pos, float projectileSpeed)
+    public static Vector2 GetPredictedPos(Rigidbody2D target, Vector3 pos, Vector2 objectVelocity, float projectileSpeed)
     {
-        if(CalculateTargetDirection(target.transform.position, pos, target.velocity, projectileSpeed, out Vector2 direction))
+        if(CalculateTargetDirection(target.transform.position, pos, target.velocity, objectVelocity, projectileSpeed, out Vector2 direction))
         {
             return direction * projectileSpeed;
         }
@@ -16,11 +16,12 @@ public static class PredictPlayerPos
         }
     }
     
-    private static bool CalculateTargetDirection(Vector2 a, Vector2 b, Vector2 vA, float sB, out Vector2 direction)
+    private static bool CalculateTargetDirection(Vector2 a, Vector2 b, Vector2 vA, Vector2 vB, float sB, out Vector2 direction)
     {
         //a = target pos
         //b = current pos
         //vA = target velocity
+        //vB = object (enemy) velocity
         //sB = projectile speed
 
         Vector2 aToB = b - a;
@@ -38,7 +39,10 @@ public static class PredictPlayerPos
         float dA = Mathf.Max(root1, root2);
         float t = dA / sB;
         Vector2 c = a + vA * t;
-        direction = (c - b).normalized;
+
+        Vector2 adjustedVelocity = vB * t;
+        direction = ((c - adjustedVelocity) - b).normalized;
+        
         return true;
     }
 

@@ -6,16 +6,17 @@ public abstract class Projectile : MonoBehaviour
 {
     //public TrailRenderer trail;
     
-    private float damage;
-    private Vector3 direction;
-    private float range;
-    private Vector3 startPos;
-    private Rigidbody2D rb;
-    private Collider2D c;
-    private float speed;
+    protected float damage;
+    protected Vector3 direction;
+    protected float range;
+    protected Vector3 startPos;
+    protected Rigidbody2D rb;
+    protected Collider2D c;
+    protected float speed;
+    protected Vector3 characterVelocity;
 
-    private bool isPlayer;
-    private WeaponTypes weaponType;
+    protected bool isPlayer;
+    protected WeaponTypes weaponType;
     
     public void Init(Transform pos, float damage, float range, float speed, Vector3 characterVelocity, LayerMask targetLayer, LayerMask sender, bool isPlayer, WeaponTypes weaponType)
     {
@@ -25,6 +26,7 @@ public abstract class Projectile : MonoBehaviour
         c.includeLayers = targetLayer;
         c.excludeLayers = sender;
 
+        this.characterVelocity = characterVelocity;
         this.damage = damage;
         transform.position = pos.position + characterVelocity * 0.015f;
         transform.rotation = pos.rotation;
@@ -46,7 +48,7 @@ public abstract class Projectile : MonoBehaviour
     public abstract void OnInit();
     
     //Just make this in each child, like lasers will move differently than missiles, but they all have access to the same info set in Init()
-    private void FixedUpdate()
+    /*private void FixedUpdate()
     {
         if(gameObject.activeSelf)
         {
@@ -57,13 +59,16 @@ public abstract class Projectile : MonoBehaviour
                 ReturnToPool();
             }
         }
-    }
+    }*/
     
-    private void ReturnToPool()
+    public void ReturnToPool()
     {
         //trail.emitting = false;
         OnReturnToPool();
+        rb.velocity = Vector2.zero;
         gameObject.SetActive(false);
+
+        ProjectilePool.Instance.ReturnProjectile(gameObject, weaponType, isPlayer);
 
         //ProjectilePool.Instance.ReturnProjectile(gameObject);
     }

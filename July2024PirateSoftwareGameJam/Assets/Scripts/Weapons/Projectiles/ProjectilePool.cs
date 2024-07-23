@@ -106,7 +106,23 @@ public class ProjectilePool : MonoBehaviour
 
     public void ShootProjectile(Transform pos, float damage, float range, float speed, Vector2 characterVelocity, bool isPlayer, WeaponTypes weaponType)
     {
+        Projectile projectile = GetProjectile(weaponType, isPlayer).GetComponent<Projectile>();
         
+        LayerMask sender;
+        LayerMask target;
+
+        if(isPlayer)
+        {
+            sender = LayerMask.GetMask("Player");
+            target = LayerMask.GetMask("Enemy");
+        }
+        else
+        {
+            sender = LayerMask.GetMask("Enemy");
+            target = LayerMask.GetMask("Player");
+        }
+        
+        projectile.Init(pos, damage, range, speed, characterVelocity, target, sender, isPlayer, weaponType);
     }
 
     private GameObject GetProjectile(WeaponTypes weaponType, bool isPlayer)

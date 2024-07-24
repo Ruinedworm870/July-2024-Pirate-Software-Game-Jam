@@ -12,7 +12,7 @@ public abstract class Projectile : MonoBehaviour
     protected Vector3 startPos;
     protected Rigidbody2D rb;
     protected Collider2D c;
-    protected float speed;
+    protected float speed; //Mass for missile
     protected Vector3 characterVelocity;
 
     protected bool isPlayer;

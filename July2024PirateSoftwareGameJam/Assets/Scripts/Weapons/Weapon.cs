@@ -5,7 +5,8 @@ using UnityEngine;
 public enum WeaponTypes
 {
     Laser,
-    Missile
+    Missile,
+    AllTypes
 }
 
 public class Weapon : MonoBehaviour
@@ -21,26 +22,15 @@ public class Weapon : MonoBehaviour
     public bool isPlayerWeapon;
     public WeaponTypes weaponType;
 
-    //public float fireRate; //Shots per second
     private float fireRateCounter = 0;
 
     public Transform firingPoint;
-    //public ParticleSystem projectile;
     
-    private void Awake()
+    public void Shoot(Vector3 characterVelocity, WeaponTypes weaponType)
     {
-        //projectile.GetComponent<ProjectileCollisionHandler>().SetDamage(damage);
-    }
-    
-    public void Shoot(Vector3 characterVelocity)
-    {
-        if (Time.time >= fireRateCounter)
+        if ((this.weaponType == weaponType || weaponType == WeaponTypes.AllTypes) && Time.time >= fireRateCounter)
         {
-            //projectile.transform.position = firingPoint.position + characterVelocity * 0.0015f;
-
-            //projectile.Emit(1);
-
-            ProjectilePool.Instance.ShootProjectile(firingPoint, damage, range, speed, characterVelocity, isPlayerWeapon, weaponType);
+            ProjectilePool.Instance.ShootProjectile(firingPoint, damage, range, speed, characterVelocity, isPlayerWeapon, this.weaponType);
 
             fireRateCounter = Time.time + 1f / fireRate;
         }

@@ -59,7 +59,15 @@ public class PlayerController : MonoBehaviour, IDamageable
         {
             foreach (var i in weapons)
             {
-                i.Shoot(rb.velocity);
+                i.Shoot(rb.velocity, WeaponTypes.Laser);
+            }
+        }
+
+        if(Input.GetMouseButton(1))
+        {
+            foreach(var i in weapons)
+            {
+                i.Shoot(rb.velocity, WeaponTypes.Missile);
             }
         }
     }

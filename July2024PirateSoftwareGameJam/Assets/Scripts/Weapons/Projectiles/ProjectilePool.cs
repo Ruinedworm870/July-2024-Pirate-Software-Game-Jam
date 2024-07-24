@@ -10,22 +10,22 @@ public class ProjectilePool : MonoBehaviour
     public Transform holder;
     
     public GameObject playerLaser;
-    //public GameObject playerMissile;
+    public GameObject playerMissile;
     
     public GameObject enemyLaser;
-    //public GameObject enemyMissile;
+    public GameObject enemyMissile;
     
     private int playerLasers = 250;
-    //private int playerMissiles = 50;
+    private int playerMissiles = 50;
     
     private int enemyLasers = 1000;
-    //private int enemyMissiles = 250;
+    private int enemyMissiles = 250;
     
     private Stack<GameObject> unusedPlayerLasers = new Stack<GameObject>();
-    //private Stack<GameObject> unusedPlayerMissiles = new Stack<GameObject>();
+    private Stack<GameObject> unusedPlayerMissiles = new Stack<GameObject>();
     
     private Stack<GameObject> unusedEnemyLasers = new Stack<GameObject>();
-    //private Stack<GameObject> unusedEnemyMissiles = new Stack<GameObject>();
+    private Stack<GameObject> unusedEnemyMissiles = new Stack<GameObject>();
     
     private void Awake()
     {
@@ -43,6 +43,16 @@ public class ProjectilePool : MonoBehaviour
         {
             unusedEnemyLasers.Push(CreateObject(enemyLaser));
         }
+
+        for(int i = 0; i < playerMissiles; i++)
+        {
+            unusedPlayerMissiles.Push(CreateObject(playerMissile));
+        }
+
+        for(int i = 0; i < enemyMissiles; i++)
+        {
+            unusedEnemyMissiles.Push(CreateObject(enemyMissile));
+        }
     }   
 
     private GameObject CreateObject(GameObject prefab)
@@ -51,58 +61,6 @@ public class ProjectilePool : MonoBehaviour
         created.SetActive(false);
         return created;
     }
-
-    /*public GameObject GetPlayerBullet()
-    {
-        GameObject bullet;
-        
-        if(unusedPlayerBullets.TryPop(out bullet))
-        {
-            return bullet;
-        }
-        else
-        {
-            return CreateObject(playerBullet);
-        }
-    }
-    
-    public void ReturnPlayerBullet(GameObject b)
-    {
-        unusedPlayerBullets.Push(b);
-    }*/
-    
-    /*public void ShootProjectile(Transform pos, float damage, float range, float speed, Vector2 characterVelocity)
-    {
-        GameObject projectile;
-        
-        if (unusedProjectiles.TryPop(out projectile))
-        {
-            projectile.GetComponent<Projectile>().Init(pos, damage, range, speed, characterVelocity, LayerMask.GetMask("Enemy"), LayerMask.GetMask("Player"));
-        }
-        else
-        {
-            CreateObject(defaultProjectile).GetComponent<Projectile>().Init(pos, damage, range, speed,characterVelocity, LayerMask.GetMask("Enemy"), LayerMask.GetMask("Player"));
-        }
-    }
-    
-    public GameObject GetProjectile()
-    {
-        GameObject projectile;
-
-        if (unusedProjectiles.TryPop(out projectile))
-        {
-            return projectile;
-        }
-        else
-        {
-            return CreateObject(defaultProjectile);
-        }
-    }
-    
-    public void ReturnProjectile(GameObject p)
-    {
-        unusedProjectiles.Push(p);
-    }*/
 
     public void ShootProjectile(Transform pos, float damage, float range, float speed, Vector2 characterVelocity, bool isPlayer, WeaponTypes weaponType)
     {
@@ -158,11 +116,25 @@ public class ProjectilePool : MonoBehaviour
         {
             if (isPlayer)
             {
-                
+                if(unusedPlayerMissiles.TryPop(out projectile))
+                {
+                    return projectile;
+                }
+                else
+                {
+                    return CreateObject(playerMissile);
+                }
             }
             else
             {
-
+                if(unusedEnemyMissiles.TryPop(out projectile))
+                {
+                    return projectile;
+                }
+                else
+                {
+                    return CreateObject(enemyMissile);
+                }
             }
         }
 
@@ -184,7 +156,14 @@ public class ProjectilePool : MonoBehaviour
         }
         else if(weaponType == WeaponTypes.Missile)
         {
-
+            if(isPlayer)
+            {
+                unusedPlayerMissiles.Push(p);
+            }
+            else
+            {
+                unusedEnemyMissiles.Push(p);
+            }
         }
     }
 }

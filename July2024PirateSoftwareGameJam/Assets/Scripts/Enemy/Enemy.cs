@@ -36,7 +36,7 @@ public class Enemy : MonoBehaviour, IDamageable
             {
                 Shoot();
             }
-
+            
             Vector3 targetPos = PlayerPosition.pos + targetPosRelToPlayer;
             Vector3 directionToTargetPos = targetPos - transform.position;
 
@@ -65,7 +65,7 @@ public class Enemy : MonoBehaviour, IDamageable
     {
         foreach(var i in weapons)
         {
-            i.Shoot(rb.velocity);
+            i.Shoot(rb.velocity, WeaponTypes.AllTypes);
         }
     }
 

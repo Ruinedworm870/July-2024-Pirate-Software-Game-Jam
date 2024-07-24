@@ -33,10 +33,11 @@ public class ExplosionPool : MonoBehaviour
         return created;
     }
 
-    public void PlayExplosion(Vector3 pos)
+    public void PlayExplosion(Vector3 pos, float scale = 0.45f)
     {
         GameObject e = pool.Dequeue();
         
+        e.transform.localScale = new Vector3(scale, scale, scale);
         e.transform.position = pos;
         e.SetActive(true);
         e.GetComponent<ParticleSystem>().Play();

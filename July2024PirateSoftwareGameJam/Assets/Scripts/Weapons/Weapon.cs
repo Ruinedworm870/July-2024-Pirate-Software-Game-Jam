@@ -21,18 +21,25 @@ public class Weapon : MonoBehaviour
     public float speed;
     public bool isPlayerWeapon;
     public WeaponTypes weaponType;
+    public int ammo;
+    public float reloadTime;
 
     private float fireRateCounter = 0;
 
     public Transform firingPoint;
     
-    public void Shoot(Vector3 characterVelocity, WeaponTypes weaponType)
+    //Returns true if shot (used to only shoot 1 missile at a time)
+    public bool Shoot(Vector3 characterVelocity, WeaponTypes weaponType)
     {
         if ((this.weaponType == weaponType || weaponType == WeaponTypes.AllTypes) && Time.time >= fireRateCounter)
         {
             ProjectilePool.Instance.ShootProjectile(firingPoint, damage, range, speed, characterVelocity, isPlayerWeapon, this.weaponType);
 
             fireRateCounter = Time.time + 1f / fireRate;
+
+            return true;
         }
+
+        return false;
     }
 }

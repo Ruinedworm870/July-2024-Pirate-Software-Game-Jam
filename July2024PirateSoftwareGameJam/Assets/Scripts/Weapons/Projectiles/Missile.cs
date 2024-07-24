@@ -29,10 +29,10 @@ public class Missile : Projectile
             {
                 rb.mass += 0.1f;
             }
-
-            if (isPlayer && rotationSpeed > 2f)
+            
+            if (isPlayer && rotationSpeed > 4f)
             {
-                rotationSpeed -= 0.1f;
+                rotationSpeed -= 0.025f;
             }
             else if(rotationSpeed < 90f)
             {

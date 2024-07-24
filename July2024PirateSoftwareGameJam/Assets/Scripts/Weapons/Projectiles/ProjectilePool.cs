@@ -61,7 +61,7 @@ public class ProjectilePool : MonoBehaviour
         created.SetActive(false);
         return created;
     }
-
+    
     public void ShootProjectile(Transform pos, float damage, float range, float speed, Vector2 characterVelocity, bool isPlayer, WeaponTypes weaponType)
     {
         Projectile projectile = GetProjectile(weaponType, isPlayer).GetComponent<Projectile>();

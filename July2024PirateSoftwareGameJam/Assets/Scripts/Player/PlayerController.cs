@@ -11,6 +11,9 @@ public class PlayerController : MonoBehaviour, IDamageable
     
     private float rotationSpeed = 8f;
 
+    private float t = 0;
+    private float shootMissileDelay = 0.1f;
+
     private void Start()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -63,11 +66,16 @@ public class PlayerController : MonoBehaviour, IDamageable
             }
         }
 
-        if(Input.GetMouseButton(1))
+        if(Input.GetMouseButton(1) && Time.time >= t)
         {
-            foreach(var i in weapons)
+            t = Time.time + shootMissileDelay;
+            
+            int count = 0;
+            bool found = false;
+            while(!found && count < weapons.Count)
             {
-                i.Shoot(rb.velocity, WeaponTypes.Missile);
+                found = weapons[count].Shoot(rb.velocity, WeaponTypes.Missile);
+                count += 1;
             }
         }
     }

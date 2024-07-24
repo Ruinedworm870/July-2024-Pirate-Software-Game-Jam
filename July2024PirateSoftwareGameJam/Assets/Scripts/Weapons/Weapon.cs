@@ -23,6 +23,9 @@ public class Weapon : MonoBehaviour
     public WeaponTypes weaponType;
     public int ammo;
     public float reloadTime;
+    public AudioClip shotSound;
+    public float volume;
+    private AudioSource source;
 
     private float fireRateCounter = 0;
 
@@ -33,9 +36,19 @@ public class Weapon : MonoBehaviour
     {
         if ((this.weaponType == weaponType || weaponType == WeaponTypes.AllTypes) && Time.time >= fireRateCounter)
         {
+            if(shotSound != null)
+            {
+                if(source == null)
+                {
+                    source = SoundSourcePool.Instance.GetAudioSource();
+                }
+                
+                SoundManager.Instance.PlayOneShotSound(source, shotSound, transform.position, 0, volume);
+            }
+
             ProjectilePool.Instance.ShootProjectile(firingPoint, damage, range, speed, characterVelocity, isPlayerWeapon, this.weaponType);
 
-            fireRateCounter = Time.time + 1f / fireRate;
+            fireRateCounter = Time.time + (1f / fireRate) * Random.Range(1f, 1.05f);
 
             return true;
         }

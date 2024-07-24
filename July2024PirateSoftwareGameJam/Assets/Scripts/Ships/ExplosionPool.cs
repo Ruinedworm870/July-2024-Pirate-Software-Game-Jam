@@ -9,7 +9,7 @@ public class ExplosionPool : MonoBehaviour
     public Transform holder;
     public GameObject prefab;
 
-    private int total = 10;
+    private int total = 16;
 
     private Queue<GameObject> pool = new Queue<GameObject>();
     
@@ -40,6 +40,10 @@ public class ExplosionPool : MonoBehaviour
         e.transform.localScale = new Vector3(scale, scale, scale);
         e.transform.position = pos;
         e.SetActive(true);
+        AudioSource source = e.GetComponent<AudioSource>();
+        SoundManager.Instance.PlayOneShotSound(source, source.clip, transform.position, 0, 0.1f + scale);
+        
+        e.GetComponent<AudioSource>().Play();
         e.GetComponent<ParticleSystem>().Play();
 
         pool.Enqueue(e);

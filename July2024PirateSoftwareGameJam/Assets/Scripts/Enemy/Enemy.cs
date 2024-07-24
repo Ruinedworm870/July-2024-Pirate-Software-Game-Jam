@@ -13,11 +13,13 @@ public class Enemy : MonoBehaviour, IDamageable
     private float rotationSpeed = 8f;
 
     private Vector3 targetPosRelToPlayer;
+    private AudioSource deathExplosion;
 
     private void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         targetPosRelToPlayer = new Vector3(Random.Range(-8f, 8f), Random.Range(-8f, 8f), 0);
+        deathExplosion = GetComponent<AudioSource>();
     }
     
     private void FixedUpdate()

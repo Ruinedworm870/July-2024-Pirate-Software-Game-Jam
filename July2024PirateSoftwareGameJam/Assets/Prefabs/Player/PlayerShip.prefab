@@ -401,6 +401,18 @@ PrefabInstance:
     m_TransformParent: {fileID: 1297369571177537415}
     m_Modifications:
     - target: {fileID: 2669406364065449554, guid: df714d6400c170d4e9302b1e63dbcff5, type: 3}
+      propertyPath: volume
+      value: 0.35
+      objectReference: {fileID: 0}
+    - target: {fileID: 2669406364065449554, guid: df714d6400c170d4e9302b1e63dbcff5, type: 3}
+      propertyPath: fireRate
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 2669406364065449554, guid: df714d6400c170d4e9302b1e63dbcff5, type: 3}
+      propertyPath: shotSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 078167935e4db714b81b09e00bfc4533, type: 3}
+    - target: {fileID: 2669406364065449554, guid: df714d6400c170d4e9302b1e63dbcff5, type: 3}
       propertyPath: isPlayerWeapon
       value: 1
       objectReference: {fileID: 0}
@@ -652,6 +664,10 @@ PrefabInstance:
     - target: {fileID: 2669406364065449554, guid: 90d61788aa818a943815bf769e6894f0, type: 3}
       propertyPath: fireRate
       value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2669406364065449554, guid: 90d61788aa818a943815bf769e6894f0, type: 3}
+      propertyPath: shotSound
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 2669406364065449554, guid: 90d61788aa818a943815bf769e6894f0, type: 3}
       propertyPath: isPlayerWeapon

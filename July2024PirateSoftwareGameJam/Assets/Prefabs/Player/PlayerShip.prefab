@@ -402,7 +402,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2669406364065449554, guid: df714d6400c170d4e9302b1e63dbcff5, type: 3}
       propertyPath: volume
-      value: 0.35
+      value: 0.42
       objectReference: {fileID: 0}
     - target: {fileID: 2669406364065449554, guid: df714d6400c170d4e9302b1e63dbcff5, type: 3}
       propertyPath: fireRate

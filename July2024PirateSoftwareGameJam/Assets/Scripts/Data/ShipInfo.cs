@@ -21,14 +21,15 @@ public class ShipInfo
         -1 = Hull
         -2 = Shield
         -3 = Collector
-        0 = Laser
-        1 = Missile
+        0 = EMPTY
+        1 = Laser
+        2 = Missile
     */
     private (int weaponId, int lvl)[] weaponInfo = new (int weaponId, int lvl)[10];
     
     public ShipInfo()
     {
-        weaponInfo[0].weaponId = 0;
+        weaponInfo[0].weaponId = 1;
         weaponInfo[7].weaponId = -1;
         weaponInfo[8].weaponId = -2;
         weaponInfo[9].weaponId = -3;

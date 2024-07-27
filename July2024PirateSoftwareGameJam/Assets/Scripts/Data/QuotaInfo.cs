@@ -6,7 +6,6 @@ public class QuotaInfo
 {
     private int quotaTier;
     private int battlesRemaining;
-    private int quotaProgress;
     
     public QuotaInfo()
     {
@@ -23,11 +22,6 @@ public class QuotaInfo
         return battlesRemaining;
     }
 
-    public int GetQuotaProgress()
-    {
-        return quotaProgress;
-    }
-
     public void SetQuotaTier(int tier)
     {
         quotaTier = tier;
@@ -36,10 +30,5 @@ public class QuotaInfo
     public void SetBattlesRemaining(int br)
     {
         battlesRemaining = br;
-    }
-    
-    public void SetQuotaProgress(int progress)
-    {
-        quotaProgress = progress;
     }
 }

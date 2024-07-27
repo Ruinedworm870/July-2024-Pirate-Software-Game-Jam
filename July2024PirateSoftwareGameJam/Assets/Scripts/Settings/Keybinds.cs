@@ -15,12 +15,14 @@ public static class Keybinds
         keybinds["S"] = KeyCode.S;
         keybinds["A"] = KeyCode.A;
         keybinds["D"] = KeyCode.D;
+        keybinds["ESC"] = KeyCode.Escape;
 
 
         keyNames["W"] = "Forward";
         keyNames["S"] = "Backward";
         keyNames["A"] = "Left";
         keyNames["D"] = "Right";
+        keyNames["ESC"] = "Pause";
     }
 
     public static void ChangeKeybind(string key, KeyCode pressed)

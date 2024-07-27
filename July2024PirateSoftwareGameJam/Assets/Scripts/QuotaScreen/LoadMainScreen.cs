@@ -17,46 +17,53 @@ public class LoadMainScreen : MonoBehaviour
     public TextMeshProUGUI pureIronPlateAmount;
     
     //These preserve the already established ship slot indexes (visible in ShipInfo)
-    public List<Transform> shipSections;
+    public List<Transform> shipSections = new List<Transform>();
     
     private void Start()
     {
-        LoadQuotaInfo(DataHandler.Instance.quotaInfo);
-        LoadResourceInfo(DataHandler.Instance.resourceInfo);
-        LoadShipInfo(DataHandler.Instance.shipInfo);
+        LoadQuotaInfo();
+        LoadResourceInfo();
+        LoadShipInfo();
     }
-
-    public void LoadQuotaInfo(QuotaInfo quotaInfo)
+    
+    public void LoadQuotaInfo()
     {
+        QuotaInfo quotaInfo = DataHandler.Instance.quotaInfo;
+        ResourceInfo resourceInfo = DataHandler.Instance.resourceInfo;
+
         int quotaSize = QuotaScaling.GetQuotaSize(quotaInfo.GetQuotaTier());
 
         battlesRemaining.text = "Battles Remaining: " + quotaInfo.GetBattlesRemaining();
 
         quotaSlider.maxValue = quotaSize;
-        quotaSlider.value = quotaInfo.GetQuotaProgress();
+        quotaSlider.value = resourceInfo.GetAmount(0);
 
-        goldProgressText.text = NumberHandler.GetDisplay(quotaInfo.GetQuotaProgress(), 1) + " / " + NumberHandler.GetDisplay(quotaSize, 1);
+        goldProgressText.text = NumberHandler.GetDisplay(resourceInfo.GetAmount(0), 1) + " / " + NumberHandler.GetDisplay(quotaSize, 1);
     } 
 
-    public void LoadResourceInfo(ResourceInfo resourceInfo)
+    public void LoadResourceInfo()
     {
+        ResourceInfo resourceInfo = DataHandler.Instance.resourceInfo;
+
         impureIronAmount.text = NumberHandler.GetDisplay(resourceInfo.GetAmount(1), 1);
         ironChunkAmount.text = NumberHandler.GetDisplay(resourceInfo.GetAmount(2), 1);
         pureIronPlateAmount.text = NumberHandler.GetDisplay(resourceInfo.GetAmount(3), 1);
     }
     
-    public void LoadShipInfo(ShipInfo shipInfo)
+    public void LoadShipInfo()
     {
+        ShipInfo shipInfo = DataHandler.Instance.shipInfo;
+
         for(int i = 0; i < shipSections.Count; i++)
         {
             Transform section = shipSections[i];
 
             section.GetChild(0).GetComponent<TextMeshProUGUI>().text = GetSectionName(i) + GetWeaponName(shipInfo.GetWeaponId(i));
-            section.GetChild(0).GetComponent<TextMeshProUGUI>().text = NumberHandler.GetDisplay(shipInfo.GetLvl(i), 0);
+            section.GetChild(1).GetComponent<TextMeshProUGUI>().text = NumberHandler.GetDisplay(shipInfo.GetLvl(i), 0);
         }
     }
     
-    private string GetWeaponName(int weaponId)
+    public string GetWeaponName(int weaponId)
     {
         if(weaponId < 0)
         {
@@ -64,8 +71,12 @@ public class LoadMainScreen : MonoBehaviour
         }
 
         string s = " - ";
-
+        
         if(weaponId == 0)
+        {
+            return s + "EMPTY";
+        }
+        else if(weaponId == 1)
         {
             return s + "Laser";
         }
@@ -75,7 +86,7 @@ public class LoadMainScreen : MonoBehaviour
         }
     }
 
-    private string GetSectionName(int slot)
+    public string GetSectionName(int slot)
     {
         switch (slot)
         {

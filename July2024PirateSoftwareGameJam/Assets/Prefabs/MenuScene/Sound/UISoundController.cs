@@ -13,9 +13,9 @@ public class UISoundController : MonoBehaviour
     {
         Instance = this;
     }
-
+    
     public void PlayClickSound()
     {
-        source.PlayOneShot(clickSound);
+        source.PlayOneShot(clickSound, 2.25f);
     }
 }

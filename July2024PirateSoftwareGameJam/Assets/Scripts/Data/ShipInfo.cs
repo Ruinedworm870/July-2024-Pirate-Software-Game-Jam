@@ -62,4 +62,20 @@ public class ShipInfo
     {
         return weaponInfo[slot].lvl;
     }
+
+    public int GetEmptySlotsFilled()
+    {
+        int filled = 0;
+        for(int i = 0; i < weaponInfo.Length; i++)
+        {
+            if(GetWeaponId(i) > 0)
+            {
+                filled += 1;
+            }
+        }
+        
+        filled -= 1; //For start laser
+        
+        return filled;
+    }
 }

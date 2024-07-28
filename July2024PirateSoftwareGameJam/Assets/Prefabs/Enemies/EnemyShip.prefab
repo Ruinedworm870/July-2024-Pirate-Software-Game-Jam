@@ -53,6 +53,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   health: 100
+  shield: 100
   weapons:
   - {fileID: 511423554657476183}
   - {fileID: 8344572555277988544}
@@ -364,6 +365,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 2392678196633559584}
     m_Modifications:
     - target: {fileID: 2669406364065449554, guid: df714d6400c170d4e9302b1e63dbcff5, type: 3}
+      propertyPath: ammo
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 2669406364065449554, guid: df714d6400c170d4e9302b1e63dbcff5, type: 3}
       propertyPath: volume
       value: 0.3
       objectReference: {fileID: 0}
@@ -375,6 +380,14 @@ PrefabInstance:
       propertyPath: shotSound
       value: 
       objectReference: {fileID: 8300000, guid: 078167935e4db714b81b09e00bfc4533, type: 3}
+    - target: {fileID: 2669406364065449554, guid: df714d6400c170d4e9302b1e63dbcff5, type: 3}
+      propertyPath: startAmmo
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 2669406364065449554, guid: df714d6400c170d4e9302b1e63dbcff5, type: 3}
+      propertyPath: reloadTime
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 4962871361149630822, guid: df714d6400c170d4e9302b1e63dbcff5, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -449,12 +462,28 @@ PrefabInstance:
     m_TransformParent: {fileID: 2392678196633559584}
     m_Modifications:
     - target: {fileID: 2669406364065449554, guid: 90d61788aa818a943815bf769e6894f0, type: 3}
+      propertyPath: ammo
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2669406364065449554, guid: 90d61788aa818a943815bf769e6894f0, type: 3}
       propertyPath: range
       value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 2669406364065449554, guid: 90d61788aa818a943815bf769e6894f0, type: 3}
       propertyPath: speed
       value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 2669406364065449554, guid: 90d61788aa818a943815bf769e6894f0, type: 3}
+      propertyPath: fireRate
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2669406364065449554, guid: 90d61788aa818a943815bf769e6894f0, type: 3}
+      propertyPath: startAmmo
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2669406364065449554, guid: 90d61788aa818a943815bf769e6894f0, type: 3}
+      propertyPath: reloadTime
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 4962871361149630822, guid: 90d61788aa818a943815bf769e6894f0, type: 3}
       propertyPath: m_LocalPosition.x

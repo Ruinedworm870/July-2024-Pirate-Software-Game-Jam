@@ -1,10 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class Enemy : MonoBehaviour, IDamageable
 {
     public float health = 100f;
+    public float shield = 100f;
+    public float regenPerMin = 0.1f; //Percentage
     public List<Weapon> weapons = new List<Weapon>();
     public float inaccuracyDegree = 3.0f;
 
@@ -13,13 +17,21 @@ public class Enemy : MonoBehaviour, IDamageable
     private float rotationSpeed = 8f;
 
     private Vector3 targetPosRelToPlayer;
-    private AudioSource deathExplosion;
 
+    private GameObject healthSlider;
+    
+    private float startShield;
+    private float startHealth;
+    
     private void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         targetPosRelToPlayer = new Vector3(Random.Range(-8f, 8f), Random.Range(-8f, 8f), 0);
-        deathExplosion = GetComponent<AudioSource>();
+
+        startHealth = health;
+        startShield = shield;
+
+        healthSlider = EnemyHealthSliders.Instance.GetSliderObject();
     }
     
     private void FixedUpdate()
@@ -51,6 +63,34 @@ public class Enemy : MonoBehaviour, IDamageable
                 //Random Force
                 rb.AddForce(new Vector2(Random.Range(-1f, 1f), Random.Range(-1f, 1f)).normalized, ForceMode2D.Impulse);
             }
+
+            shield = Mathf.Clamp(shield + (regenPerMin * (Time.fixedDeltaTime / 60f)), 0, startShield);
+            healthSlider.transform.GetChild(0).GetComponent<Slider>().value = shield / startShield;
+        }
+    }
+    
+    private void Update()
+    {
+        if(gameObject.activeSelf)
+        {
+            Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            mousePos.z = 0;
+            if (Vector3.Distance(mousePos, transform.position) < 2f)
+            {
+                if (!healthSlider.activeSelf)
+                {
+                    healthSlider.transform.position = new Vector3(transform.position.x, transform.position.y + 0.6f, 0);
+                    healthSlider.SetActive(true);
+                }
+                else
+                {
+                    healthSlider.transform.position = Vector3.Lerp(healthSlider.transform.position, new Vector3(transform.position.x, transform.position.y + 0.6f, 0), 0.25f);
+                }
+            }
+            else
+            {
+                healthSlider.SetActive(false);
+            }
         }
     }
     
@@ -70,14 +110,38 @@ public class Enemy : MonoBehaviour, IDamageable
             i.Shoot(rb.velocity, WeaponTypes.AllTypes);
         }
     }
-
-    public void TakeDamage(float amount)
+    
+    public void TakeDamage(float amount, WeaponTypes type)
     {
-        health -= amount;
+        if(type == WeaponTypes.Missile)
+        {
+            health -= amount;
+        }
+        else
+        {
+            if(shield > 0)
+            {
+                shield -= amount;
+
+                if (shield < 0)
+                {
+                    health += shield;
+                }
+            }
+            else
+            {
+                health -= amount;
+            }    
+        }
+        
+        healthSlider.transform.GetChild(0).GetComponent<Slider>().value = shield / startShield;
+        healthSlider.transform.GetChild(1).GetComponent<Slider>().value = health / startHealth;
+
         if(health <= 0)
         {
             ExplosionPool.Instance.PlayExplosion(transform.position);
             gameObject.SetActive(false);
+            EnemyHealthSliders.Instance.ReturnSliderObject(healthSlider);
         }
     }
 }

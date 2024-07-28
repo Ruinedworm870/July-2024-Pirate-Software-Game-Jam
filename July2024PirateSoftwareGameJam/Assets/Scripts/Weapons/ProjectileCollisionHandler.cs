@@ -26,7 +26,7 @@ public class ProjectileCollisionHandler : MonoBehaviour
 
         if(damageable != null)
         {
-            damageable.TakeDamage(damage);
+            damageable.TakeDamage(damage, 0);
         }
     }
 }

@@ -95,8 +95,8 @@ public static class WeaponScaling
         return baseShieldStrength + (lvl * shieldStrengthIncrease);
     }
     
-    private static float baseShieldRegen = 0.01f;
-    private static float shieldRegenIncrease = 0.005f;
+    private static float baseShieldRegen = 0.1f;
+    private static float shieldRegenIncrease = 0.03f;
     
     public static float GetShieldRegen(int lvl)
     {
@@ -162,5 +162,23 @@ public static class WeaponScaling
     public static bool IsMaxLevel(int lvl)
     {
         return lvl >= totalImpureLevels + totalChunkLevels + totalPureLevels;
+    }
+
+    private static int replaceAnythingCost = 50;
+    private static int replaceEmptyStartCost = 100;
+    private static int replaceEmptyCostIncrease = 100;
+    private static int replacesBeforeNextMat = 2;
+
+    public static int GetReplaceCostOfAnything()
+    {
+        return replaceAnythingCost;
+    }
+
+    public static (int id, int amount) GetReplaceCostOfEmpty(int emptiesReplaced)
+    {
+        int id = (emptiesReplaced / replacesBeforeNextMat) + 1;
+        int amount = replaceEmptyStartCost + (replaceEmptyCostIncrease * (emptiesReplaced % replacesBeforeNextMat));
+
+        return (id, amount);
     }
 }

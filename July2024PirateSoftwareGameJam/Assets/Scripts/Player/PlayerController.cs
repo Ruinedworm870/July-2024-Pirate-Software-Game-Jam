@@ -4,8 +4,12 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour, IDamageable
 {
-    public float health = 100;
+    public float health = 100f;
+    public float shield = 100f;
+    public float regenPerMin = 0.1f; //Percentage
     public List<Weapon> weapons = new List<Weapon>();
+
+    public HandleBattleUI handleBattleUI;
     
     private Rigidbody2D rb;
     
@@ -14,10 +18,16 @@ public class PlayerController : MonoBehaviour, IDamageable
     private float t = 0;
     private float shootMissileDelay = 0.1f;
 
+    private float startHealth;
+    private float startShield;
+
     private void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         PlayerPosition.playerRb = rb;
+
+        startHealth = health;
+        startShield = shield;
     }
     
     private void FixedUpdate()
@@ -78,6 +88,11 @@ public class PlayerController : MonoBehaviour, IDamageable
                 count += 1;
             }
         }
+        
+        shield = Mathf.Clamp(shield + (startShield * (regenPerMin * (Time.fixedDeltaTime / 60f))), 0, startShield);
+        handleBattleUI.UpdateShieldSlider(shield / startShield);
+
+        HandleReloadStatus();
     }
 
     private float lastV = 0;
@@ -94,8 +109,71 @@ public class PlayerController : MonoBehaviour, IDamageable
         lastV = v;
     }
 
-    public void TakeDamage(float amount)
+    private void HandleReloadStatus()
     {
-        health -= amount;
+        int missiles = 0;
+        int totalMissiles = 0;
+        float lowestMissileReloadTime = 0f;
+
+        int lasers = 0;
+        int totalLasers = 0;
+        float lowestLaserReloadTime = 0f;
+        
+        foreach(var i in weapons)
+        {
+            if(i.weaponType == WeaponTypes.Missile)
+            {
+                missiles += i.ammo;
+                totalMissiles += i.startAmmo;
+                
+                if(lowestMissileReloadTime == 0 || i.GetReloadTimeRemaining() < lowestMissileReloadTime)
+                {
+                    lowestMissileReloadTime = i.GetReloadTimeRemaining();
+                }
+            }
+            else
+            {
+                lasers += i.ammo;
+                totalLasers += i.startAmmo;
+
+                if(lowestLaserReloadTime == 0 || i.GetReloadTimeRemaining() < lowestLaserReloadTime)
+                {
+                    lowestLaserReloadTime = i.GetReloadTimeRemaining();
+                }
+            }
+        }
+        
+        handleBattleUI.HandleAmmoText(lasers, totalLasers, missiles, totalMissiles, lowestLaserReloadTime, lowestMissileReloadTime);
+    }
+
+    public void TakeDamage(float amount, WeaponTypes type)
+    {
+        if (type == WeaponTypes.Missile)
+        {
+            health -= amount;
+        }
+        else
+        {
+            if (shield > 0)
+            {
+                shield -= amount;
+
+                if (shield < 0)
+                {
+                    health += shield;
+                }
+            }
+            else
+            {
+                health -= amount;
+            }
+        }
+
+        handleBattleUI.UpdateHealthSliders(health / startHealth, shield / startShield);
+        
+        if (health <= 0)
+        {
+            handleBattleUI.OnDeath();
+        }
     }
 }

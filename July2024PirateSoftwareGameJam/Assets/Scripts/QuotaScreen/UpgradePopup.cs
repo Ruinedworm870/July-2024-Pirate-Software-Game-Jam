@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -32,6 +33,12 @@ public class UpgradePopup : MonoBehaviour
 
     public Image nonWeaponUpgradeMaterialImage;
     public TextMeshProUGUI nonWeaponUpgradeAmount;
+
+    public Image laserReplaceMaterial;
+    public TextMeshProUGUI laserReplaceAmount;
+
+    public Image missileReplaceMaterial;
+    public TextMeshProUGUI missileReplaceAmount;
     
     /*
         Slots:
@@ -82,6 +89,7 @@ public class UpgradePopup : MonoBehaviour
         if(!replaceOpen)
         {
             replaceOpen = true;
+            SetupReplace();
             controller.SetTrigger("OpenReplace");
         }
     }
@@ -90,6 +98,38 @@ public class UpgradePopup : MonoBehaviour
     {
         replaceOpen = false;
         controller.SetTrigger("CloseReplace");
+    }
+    
+    private void SetupReplace()
+    {
+        if(DataHandler.Instance.shipInfo.GetWeaponId(openSlot) == 0)
+        {
+            //Empty, scaled cost increase
+
+            (int id, int amount) = WeaponScaling.GetReplaceCostOfEmpty(DataHandler.Instance.shipInfo.GetEmptySlotsFilled());
+
+            laserReplaceMaterial.sprite = GetMaterialSprite(id);
+            laserReplaceMaterial.GetComponent<Tooltip>().SetText(GetMaterialName(id));
+            laserReplaceAmount.text = "-" + amount;
+
+            missileReplaceMaterial.sprite = GetMaterialSprite(id);
+            missileReplaceMaterial.GetComponent<Tooltip>().SetText(GetMaterialName(id));
+            missileReplaceAmount.text = "-" + amount;
+        }
+        else
+        {
+            //Not empty, base replace cost
+            
+            int amount = WeaponScaling.GetReplaceCostOfAnything();
+            
+            laserReplaceMaterial.sprite = impureIron;
+            laserReplaceMaterial.GetComponent<Tooltip>().SetText(GetMaterialName(1));
+            laserReplaceAmount.text = "-" + amount;
+            
+            missileReplaceMaterial.sprite = impureIron;
+            missileReplaceMaterial.GetComponent<Tooltip>().SetText(GetMaterialName(1));
+            missileReplaceAmount.text = "-" + amount;
+        }
     }
     
     //For on initial setup / replace
@@ -188,11 +228,11 @@ public class UpgradePopup : MonoBehaviour
             }
         }
 
-        lvl.color = Color.black;
-        damage.color = Color.black;
-        fireRate.color = Color.black;
-        magSize.color = Color.black;
-        reloadSpeed.color = Color.black;
+        lvl.color = Color.white;
+        damage.color = Color.white;
+        fireRate.color = Color.white;
+        magSize.color = Color.white;
+        reloadSpeed.color = Color.white;
     }
     
     //Wehn hovering the upgrade button
@@ -333,7 +373,7 @@ public class UpgradePopup : MonoBehaviour
         }
         else
         {
-            text.color = Color.black;
+            text.color = Color.white;
         }
     }
     
@@ -345,11 +385,11 @@ public class UpgradePopup : MonoBehaviour
 
     public void EndHoverUpgrade(bool fromUpgrade)
     {
-        lvl.color = Color.black;
-        damage.color = Color.black;
-        fireRate.color = Color.black;
-        magSize.color = Color.black;
-        reloadSpeed.color = Color.black;
+        lvl.color = Color.white;
+        damage.color = Color.white;
+        fireRate.color = Color.white;
+        magSize.color = Color.white;
+        reloadSpeed.color = Color.white;
 
         if (fromUpgrade)
         {
@@ -442,6 +482,45 @@ public class UpgradePopup : MonoBehaviour
     
     public void SelectReplacement(int id)
     {
+        if(id == DataHandler.Instance.shipInfo.GetWeaponId(openSlot))
+        {
+            CloseReplace();
+            return;
+        }
+
+        if(DataHandler.Instance.shipInfo.GetWeaponId(openSlot) == 0)
+        {
+            //From empty
+
+            (int i, int amount) = WeaponScaling.GetReplaceCostOfEmpty(DataHandler.Instance.shipInfo.GetEmptySlotsFilled());
+
+            int newAmount = DataHandler.Instance.resourceInfo.GetAmount(i) - amount;
+
+            if(newAmount >= 0)
+            {
+                DataHandler.Instance.resourceInfo.SetAmount(i, newAmount);
+            }
+            else
+            {
+                return;
+            }
+        }
+        else
+        {
+            //From other weapon
+
+            int newAmount = DataHandler.Instance.resourceInfo.GetAmount(1) - WeaponScaling.GetReplaceCostOfAnything();
+
+            if (newAmount >= 0)
+            {
+                DataHandler.Instance.resourceInfo.SetAmount(1, newAmount);
+            }
+            else
+            {
+                return;
+            }
+        }
+
         DataHandler.Instance.shipInfo.SetWeaponId(openSlot, id);
         
         if(DataHandler.Instance.shipInfo.GetLvl(openSlot) == 0)
@@ -450,6 +529,7 @@ public class UpgradePopup : MonoBehaviour
         }
 
         CloseReplace();
+        loadMainScreen.LoadResourceInfo();
         loadMainScreen.LoadShipInfo();
         SetupMenu();
     }

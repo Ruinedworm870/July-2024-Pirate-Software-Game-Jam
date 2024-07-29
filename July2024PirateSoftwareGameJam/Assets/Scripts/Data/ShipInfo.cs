@@ -16,7 +16,7 @@ public class ShipInfo
         7 = Hull
         8 = Shield
         9 = Collector
-
+        
         WeaponIds:
         -1 = Hull
         -2 = Shield
@@ -77,5 +77,10 @@ public class ShipInfo
         filled -= 1; //For start laser
         
         return filled;
+    }
+
+    public (int weaponId, int lvl)[] GetWeaponInfo()
+    {
+        return weaponInfo;
     }
 }

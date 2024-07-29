@@ -45,11 +45,14 @@ public abstract class Projectile : MonoBehaviour
     
     public void ReturnToPool()
     {
-        OnReturnToPool();
-        rb.velocity = Vector2.zero;
-        gameObject.SetActive(false);
+        if(gameObject.activeSelf)
+        {
+            OnReturnToPool();
+            rb.velocity = Vector2.zero;
+            gameObject.SetActive(false);
 
-        ProjectilePool.Instance.ReturnProjectile(gameObject, weaponType, isPlayer);
+            ProjectilePool.Instance.ReturnProjectile(gameObject, weaponType, isPlayer);
+        }
     }
     
     //For doing extra disabling stuff (explosions, disabling trail)

@@ -22,22 +22,46 @@ public class Enemy : MonoBehaviour, IDamageable
     
     private float startShield;
     private float startHealth;
+
+    //private float startMass;
     
     private void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        //startMass = rb.mass;
+
         targetPosRelToPlayer = new Vector3(Random.Range(-8f, 8f), Random.Range(-8f, 8f), 0);
 
         startHealth = health;
         startShield = shield;
+    }
 
-        healthSlider = EnemyHealthSliders.Instance.GetSliderObject();
+    public void Reset()
+    {
+        if(healthSlider == null)
+        {
+            healthSlider = EnemyHealthSliders.Instance.GetSliderObject();
+        }
+        
+        startHealth = health;
+        startShield = shield;
+        healthSlider.transform.GetChild(0).GetComponent<Slider>().value = 1;
+        healthSlider.transform.GetChild(1).GetComponent<Slider>().value = 1;
     }
     
     private void FixedUpdate()
     {
         if(gameObject.activeSelf)
         {
+            /*if(Vector3.Distance(transform.position, PlayerPosition.pos) >= 25f)
+            {
+                rb.mass = startMass - 1;
+            }
+            else
+            {
+                rb.mass = startMass;
+            }*/
+            
             Vector3 predictedPos = PredictPlayerPos.GetPredictedPos(PlayerPosition.playerRb, transform.position, rb.velocity, Random.Range(15f, 35f));//PlayerPosition.pos - transform.position;
             Vector3 direction = predictedPos.normalized;
             
@@ -105,9 +129,14 @@ public class Enemy : MonoBehaviour, IDamageable
 
     private void Shoot()
     {
-        foreach(var i in weapons)
+        bool playedSound = false; //Prevents multiple laser sounds from playing at once
+
+        foreach (var i in weapons)
         {
-            i.Shoot(rb.velocity, WeaponTypes.AllTypes);
+            if(i.Shoot(rb.velocity, WeaponTypes.AllTypes, !playedSound) && i.weaponType == WeaponTypes.Laser)
+            {
+                playedSound = true;
+            }
         }
     }
     
@@ -139,9 +168,28 @@ public class Enemy : MonoBehaviour, IDamageable
 
         if(health <= 0)
         {
+            bool dropPowerup = Random.Range(0f, 1f) < WeaponScaling.GetRechargeDropChance(DataHandler.Instance.shipInfo.GetLvl(9));
+            
+            if(dropPowerup)
+            {
+                ShieldPowerupPool.Instance.SpawnShield(transform.position);
+            }
+
             ExplosionPool.Instance.PlayExplosion(transform.position);
             gameObject.SetActive(false);
-            EnemyHealthSliders.Instance.ReturnSliderObject(healthSlider);
+            //EnemyHealthSliders.Instance.ReturnSliderObject(healthSlider);
+            EnemySpawner.Instance.EnemyDied(gameObject);
+            healthSlider.SetActive(false);
         }
+    }
+
+    public void Deactivate()
+    {
+        gameObject.SetActive(false);
+
+        if(healthSlider != null)
+        {
+            healthSlider.SetActive(false);
+        }   
     }
 }

@@ -8,6 +8,7 @@ public class UISoundController : MonoBehaviour
 
     public AudioSource source;
     public AudioClip clickSound;
+    public AudioClip pickupSound;
 
     private void Awake()
     {
@@ -17,5 +18,10 @@ public class UISoundController : MonoBehaviour
     public void PlayClickSound()
     {
         source.PlayOneShot(clickSound, 2.25f);
+    }
+
+    public void PlayPickupSound()
+    {
+        source.PlayOneShot(pickupSound);
     }
 }

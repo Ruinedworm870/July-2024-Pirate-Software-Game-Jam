@@ -5,7 +5,7 @@ using UnityEngine;
 //Also includes non weapon ship upgrades
 public static class WeaponScaling
 {
-    private static int baseLaserDamage = 1;
+    private static int baseLaserDamage = 5;
     private static int laserDamageIncrease = 1;
     
     public static int GetLaserDamage(int lvl)
@@ -104,9 +104,9 @@ public static class WeaponScaling
         return baseShieldRegen + (lvl * shieldRegenIncrease);
     }
 
-    private static float baseRechargeDropChance = 0.05f;
-    private static float rechargeDropChanceIncrease = 0.005f;
-
+    private static float baseRechargeDropChance = 0.1f;
+    private static float rechargeDropChanceIncrease = 0.01f;
+    
     public static float GetRechargeDropChance(int lvl)
     {
         lvl -= 1;
@@ -180,5 +180,12 @@ public static class WeaponScaling
         int amount = replaceEmptyStartCost + (replaceEmptyCostIncrease * (emptiesReplaced % replacesBeforeNextMat));
 
         return (id, amount);
+    }
+
+    private static float enemyHealthModifier = 0.25f;
+
+    public static float GetEnemyHealthModifier()
+    {
+        return enemyHealthModifier;
     }
 }

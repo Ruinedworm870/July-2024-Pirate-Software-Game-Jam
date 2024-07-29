@@ -11,9 +11,13 @@ public class ToBattle : MonoBehaviour
 
     public void GoToBattle()
     {
-        controller.SetTrigger("Open");
-        StartCoroutine(HandleLoadingText());
-        StartCoroutine(StartLoadDelay());
+        if(DataHandler.Instance.quotaInfo.GetBattlesRemaining() > 0)
+        {
+            DataHandler.Instance.quotaInfo.SetBattlesRemaining(DataHandler.Instance.quotaInfo.GetBattlesRemaining() - 1);
+            controller.SetTrigger("Open");
+            StartCoroutine(HandleLoadingText());
+            StartCoroutine(StartLoadDelay());
+        }
     }
     
     private IEnumerator HandleLoadingText()

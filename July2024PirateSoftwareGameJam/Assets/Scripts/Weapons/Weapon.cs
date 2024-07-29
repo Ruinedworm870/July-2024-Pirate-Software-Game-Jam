@@ -31,16 +31,24 @@ public class Weapon : MonoBehaviour
     private float fireRateCounter = 0;
 
     public Transform firingPoint;
-
+    
     private bool reloading;
     private float reloadTimeRemaining;
+    
+    public void Reset()
+    {
+        reloadTimeRemaining = 0;
+        reloading = false;
+        fireRateCounter = 0;
+        ammo = startAmmo;
+    }
 
     //Returns true if shot (used to only shoot 1 missile at a time)
-    public bool Shoot(Vector3 characterVelocity, WeaponTypes weaponType)
+    public bool Shoot(Vector3 characterVelocity, WeaponTypes weaponType, bool playSound = true, bool varyShootDelay = true)
     {
         if (!reloading && (this.weaponType == weaponType || weaponType == WeaponTypes.AllTypes) && Time.time >= fireRateCounter)
         {
-            if(shotSound != null)
+            if(shotSound != null && playSound)
             {
                 if(source == null)
                 {
@@ -52,7 +60,14 @@ public class Weapon : MonoBehaviour
 
             ProjectilePool.Instance.ShootProjectile(firingPoint, damage, range, speed, characterVelocity, isPlayerWeapon, this.weaponType);
 
-            fireRateCounter = Time.time + (1f / fireRate) * Random.Range(1f, 1.05f);
+            float t = 1f / fireRate;
+
+            if(varyShootDelay)
+            {
+                t *= Random.Range(1f, 1.075f);
+            }
+
+            fireRateCounter = Time.time + t;//(1f / fireRate) * Random.Range(1f, 1.05f);
 
             ammo -= 1;
             
@@ -72,7 +87,7 @@ public class Weapon : MonoBehaviour
     {
         return reloadTimeRemaining;
     }
-
+    
     private IEnumerator HandleReloading()
     {
         reloadTimeRemaining = reloadTime;

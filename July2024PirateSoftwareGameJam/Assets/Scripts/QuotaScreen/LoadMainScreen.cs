@@ -8,6 +8,8 @@ using UnityEngine.UI;
 //Can be used to refresh info (ex. used some resource, call LoadResourceInfo, and it will refresh that part of the display)
 public class LoadMainScreen : MonoBehaviour
 {
+    public Animator failedController;
+
     public TextMeshProUGUI battlesRemaining;
     public TextMeshProUGUI goldProgressText;
     public Slider quotaSlider;
@@ -21,6 +23,8 @@ public class LoadMainScreen : MonoBehaviour
     
     private void Start()
     {
+        HandleClickable.Reset();
+        
         LoadQuotaInfo();
         LoadResourceInfo();
         LoadShipInfo();
@@ -30,15 +34,26 @@ public class LoadMainScreen : MonoBehaviour
     {
         QuotaInfo quotaInfo = DataHandler.Instance.quotaInfo;
         ResourceInfo resourceInfo = DataHandler.Instance.resourceInfo;
-
+        
         int quotaSize = QuotaScaling.GetQuotaSize(quotaInfo.GetQuotaTier());
 
-        battlesRemaining.text = "Battles Remaining: " + quotaInfo.GetBattlesRemaining();
+        if (resourceInfo.GetAmount(0) == quotaSize)
+        {
+            quotaInfo.SetQuotaTier(quotaInfo.GetQuotaTier() + 1);
+            resourceInfo.SetAmount(0, resourceInfo.GetAmount(0) - quotaSize);
+            quotaInfo.SetBattlesRemaining(QuotaScaling.GetQuotaBattlesRemaining(quotaInfo.GetQuotaTier()));
+            LoadQuotaInfo();
+            return;
+        }
 
+        battlesRemaining.text = "Battles Remaining: " + quotaInfo.GetBattlesRemaining();
+        
         quotaSlider.maxValue = quotaSize;
         quotaSlider.value = resourceInfo.GetAmount(0);
 
         goldProgressText.text = NumberHandler.GetDisplay(resourceInfo.GetAmount(0), 1) + " / " + NumberHandler.GetDisplay(quotaSize, 1);
+
+        
     } 
 
     public void LoadResourceInfo()
@@ -48,6 +63,20 @@ public class LoadMainScreen : MonoBehaviour
         impureIronAmount.text = NumberHandler.GetDisplay(resourceInfo.GetAmount(1), 1);
         ironChunkAmount.text = NumberHandler.GetDisplay(resourceInfo.GetAmount(2), 1);
         pureIronPlateAmount.text = NumberHandler.GetDisplay(resourceInfo.GetAmount(3), 1);
+        
+        if(DataHandler.Instance.quotaInfo.GetBattlesRemaining() == 0)
+        {
+            int gold = DataHandler.Instance.resourceInfo.GetAmount(0);
+            gold += resourceInfo.GetAmount(1) / DataHandler.Instance.resourceInfo.GetConversionRate(1);
+            gold += resourceInfo.GetAmount(2) / DataHandler.Instance.resourceInfo.GetConversionRate(2);
+            gold += resourceInfo.GetAmount(3) / DataHandler.Instance.resourceInfo.GetConversionRate(3);
+
+            if(gold < QuotaScaling.GetQuotaSize(DataHandler.Instance.quotaInfo.GetQuotaTier()))
+            {
+                //Game failed
+                failedController.SetTrigger("Open");
+            }
+        }
     }
     
     public void LoadShipInfo()

@@ -18,8 +18,8 @@ public class PlayerController : MonoBehaviour, IDamageable
     private float t = 0;
     private float shootMissileDelay = 0.1f;
 
-    private float startHealth;
-    private float startShield;
+    public float startHealth;
+    public float startShield;
 
     private void Start()
     {
@@ -70,9 +70,14 @@ public class PlayerController : MonoBehaviour, IDamageable
 
         if (Input.GetMouseButton(0))
         {
+            bool playedSound = false; //Prevents multiple laser sounds from playing at once
+
             foreach (var i in weapons)
             {
-                i.Shoot(rb.velocity, WeaponTypes.Laser);
+                if(i.Shoot(rb.velocity, WeaponTypes.Laser, !playedSound, false))
+                {
+                    playedSound = true;
+                }
             }
         }
 
@@ -84,7 +89,7 @@ public class PlayerController : MonoBehaviour, IDamageable
             bool found = false;
             while(!found && count < weapons.Count)
             {
-                found = weapons[count].Shoot(rb.velocity, WeaponTypes.Missile);
+                found = weapons[count].Shoot(rb.velocity, WeaponTypes.Missile, true, false);
                 count += 1;
             }
         }
@@ -175,5 +180,10 @@ public class PlayerController : MonoBehaviour, IDamageable
         {
             handleBattleUI.OnDeath();
         }
+    }
+
+    public void ApplyShieldPowerup()
+    {
+        shield = Mathf.Clamp(shield + (startShield * WeaponScaling.GetRechargeDropHeal(DataHandler.Instance.shipInfo.GetLvl(9))), shield, startShield);
     }
 }

@@ -36,4 +36,9 @@ public class HandleClickable : MonoBehaviour
             Cursor.SetCursor(d, Vector2.zero, CursorMode.Auto);
         }
     }
+
+    public static void Reset()
+    {
+        hoveredClickables = 0;
+    }
 }

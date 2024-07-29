@@ -2,11 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class HandleBattleUI : MonoBehaviour
 {
     public Animator controller;
+    public SetupPlayer setupPlayer;
 
     public Slider healthSlider;
     public Slider shieldSlider;
@@ -28,9 +30,17 @@ public class HandleBattleUI : MonoBehaviour
     public TextMeshProUGUI laserAmmo;
     public TextMeshProUGUI missileAmmo;
 
-    private int impureReward;
-    private int chunkReward;
-    private int pureReward;
+    private int impureReward = 0;
+    private int chunkReward = 0;
+    private int pureReward = 0;
+    
+    private void Start()
+    {
+        waveText.text = "Wave: 1";
+        impureText.text = "0";
+        chunkText.text = "0";
+        pureText.text = "0";
+    }
 
     public void UpdateHealthSliders(float health, float shield)
     {
@@ -45,31 +55,40 @@ public class HandleBattleUI : MonoBehaviour
     
     public void OnDeath()
     {
-        //Will need to deactivate all enemies here
-        
-        eowTitle.text = "You Have DIED!";
+        setupPlayer.OnDeath();
 
+        UISoundController.Instance.PlayClickSound();
+
+        EnemySpawner.Instance.DisableEnemies();
+        ProjectilePool.Instance.ResetProjectiles();
+
+        eowTitle.text = "You Have DIED!";
+        
+        //Removed this feature:
         //Set reward to 1/4 of value
-        impureReward = (int)(impureReward * 0.25f);
-        chunkReward = (int)(chunkReward * 0.25f);
-        pureReward = (int)(pureReward * 0.25f);
+        //impureReward = (int)(impureReward * 0.25f);
+        //chunkReward = (int)(chunkReward * 0.25f);
+        //pureReward = (int)(pureReward * 0.25f);
         HandleReward();
         
         newWaveButton.SetActive(false);
         leaveButton.SetActive(false);
         leaveOnDeathButton.SetActive(true);
-
-        //controller.SetTrigger("Open");
+        
+        controller.SetTrigger("Open");
     }
 
-    private void HandleReward()
+    private void HandleReward(bool updateData = false)
     {
         int goldReward = 0;
         
-        DataHandler.Instance.resourceInfo.SetAmount(1, DataHandler.Instance.resourceInfo.GetAmount(1) + impureReward);
-        DataHandler.Instance.resourceInfo.SetAmount(2, DataHandler.Instance.resourceInfo.GetAmount(2) + chunkReward);
-        DataHandler.Instance.resourceInfo.SetAmount(3, DataHandler.Instance.resourceInfo.GetAmount(3) + pureReward);
-
+        if(updateData)
+        {
+            DataHandler.Instance.resourceInfo.SetAmount(1, DataHandler.Instance.resourceInfo.GetAmount(1) + impureReward);
+            DataHandler.Instance.resourceInfo.SetAmount(2, DataHandler.Instance.resourceInfo.GetAmount(2) + chunkReward);
+            DataHandler.Instance.resourceInfo.SetAmount(3, DataHandler.Instance.resourceInfo.GetAmount(3) + pureReward);
+        }
+        
         goldReward += impureReward / DataHandler.Instance.resourceInfo.GetConversionRate(1);
         goldReward += chunkReward / DataHandler.Instance.resourceInfo.GetConversionRate(2);
         goldReward += pureReward / DataHandler.Instance.resourceInfo.GetConversionRate(3);
@@ -113,5 +132,47 @@ public class HandleBattleUI : MonoBehaviour
         {
             missileAmmo.text = "Ammo: 0 / 0";
         }
+    }
+
+    public void HandleEnemyDeath()
+    {
+        int wave = EnemySpawner.Instance.GetWave();
+
+        impureReward += WaveData.GetImpureRewardPerKill(wave);
+        chunkReward += WaveData.GetChunkRewardPerKill(wave);
+        pureReward += WaveData.GetPureRewardPerKill(wave);
+
+        impureText.text = NumberHandler.GetDisplay(impureReward, 1);
+        chunkText.text = NumberHandler.GetDisplay(chunkReward, 1);
+        pureText.text = NumberHandler.GetDisplay(pureReward, 1);
+    }
+
+    public void HandleEndOfWave()
+    {
+        UISoundController.Instance.PlayClickSound();
+
+        ProjectilePool.Instance.ResetProjectiles();
+        
+        eowTitle.text = "Wave " + EnemySpawner.Instance.GetWave() + " Survived";
+        
+        HandleReward();
+
+        controller.SetTrigger("Open");
+    }
+
+    public void NextWave()
+    {
+        controller.SetTrigger("Close");
+        setupPlayer.OnNewWave();
+        ShieldPowerupPool.Instance.ResetPositions();
+        PlayerPosition.pos = Vector3.zero;
+        EnemySpawner.Instance.NewWave();
+        waveText.text = "Wave: " + EnemySpawner.Instance.GetWave();
+    }
+
+    public void Leave()
+    {
+        HandleReward(true);
+        SceneManager.LoadSceneAsync(0);
     }
 }

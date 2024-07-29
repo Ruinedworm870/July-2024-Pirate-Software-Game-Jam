@@ -26,6 +26,8 @@ public class ProjectilePool : MonoBehaviour
     
     private Stack<GameObject> unusedEnemyLasers = new Stack<GameObject>();
     private Stack<GameObject> unusedEnemyMissiles = new Stack<GameObject>();
+
+    private List<GameObject> allProjectiles = new List<GameObject>();
     
     private void Awake()
     {
@@ -36,22 +38,30 @@ public class ProjectilePool : MonoBehaviour
     {
         for(int i = 0; i < playerLasers; i++)
         {
-            unusedPlayerLasers.Push(CreateObject(playerLaser));
+            GameObject c = CreateObject(playerLaser);
+            unusedPlayerLasers.Push(c);
+            allProjectiles.Add(c);
         }
 
         for(int i = 0; i < enemyLasers; i++)
         {
-            unusedEnemyLasers.Push(CreateObject(enemyLaser));
+            GameObject c = CreateObject(enemyLaser);
+            unusedEnemyLasers.Push(c);
+            allProjectiles.Add(c);
         }
 
         for(int i = 0; i < playerMissiles; i++)
         {
-            unusedPlayerMissiles.Push(CreateObject(playerMissile));
+            GameObject c = CreateObject(playerMissile);
+            unusedPlayerMissiles.Push(c);
+            allProjectiles.Add(c);
         }
 
         for(int i = 0; i < enemyMissiles; i++)
         {
-            unusedEnemyMissiles.Push(CreateObject(enemyMissile));
+            GameObject c = CreateObject(enemyMissile);
+            unusedEnemyMissiles.Push(c);
+            allProjectiles.Add(c);
         }
     }   
 
@@ -164,6 +174,14 @@ public class ProjectilePool : MonoBehaviour
             {
                 unusedEnemyMissiles.Push(p);
             }
+        }
+    }
+
+    public void ResetProjectiles()
+    {
+        foreach(var i in allProjectiles)
+        {
+            i.GetComponent<Projectile>().ReturnToPool();
         }
     }
 }

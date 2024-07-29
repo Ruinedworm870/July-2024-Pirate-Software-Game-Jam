@@ -20,7 +20,7 @@ public class ResourceInfo
         conversionRates[1] = 4;
         conversionRates[2] = 2;
 
-        amounts[1] = 80;
+        amounts[1] = 100;
     }
     
     public int GetAmount(int id)
